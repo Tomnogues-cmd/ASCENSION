@@ -1,0 +1,30 @@
+{
+  "name": "ascension",
+  "version": "1.0.0",
+  "description": "Bouge. Progresse. Débloque ton potentiel.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win portable"
+  },
+  "build": {
+    "appId": "com.ascension.app",
+    "productName": "ASCENSION",
+    "win": {
+      "target": "portable",
+      "icon": "icon.ico"
+    },
+    "portable": {
+      "artifactName": "ASCENSION.exe"
+    },
+    "files": [
+      "main.js",
+      "index.html",
+      "icon.ico"
+    ]
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.0.0"
+  }
+}
