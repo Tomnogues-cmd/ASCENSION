@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASCENSION — Bouge. Progresse. Débloque ton potentiel.</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #10101a;
+    --bg3: #15152a;
+    --card: #1a1a2e;
+    --card2: #1e1e35;
+    --border: #2a2a4a;
+    --blue: #4f8ef7;
+    --blue2: #6fa3ff;
+    --purple: #8b5cf6;
+    --purple2: #a78bfa;
+    --gold: #f59e0b;
+    --gold2: #fbbf24;
+    --green: #10b981;
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #64748b;
+    --flame: #60a5fa;
+    --flame2: #93c5fd;
+    --glow: 0 0 20px rgba(79,142,247,0.3);
+    --glow-gold: 0 0 20px rgba(245,158,11,0.4);
+    --glow-purple: 0 0 20px rgba(139,92,246,0.3);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  /* PARTICLES */
+  #particles { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; overflow:hidden; }
+  .particle {
+    position:absolute; border-radius:50%;
+    background: radial-gradient(circle, rgba(79,142,247,0.8), transparent);
+    animation: float linear infinite;
+    pointer-events:none;
+  }
+  @keyframes float {
+    0% { transform: translateY(100vh) scale(0); opacity:0; }
+    10% { opacity:1; }
+    90% { opacity:0.5; }
+    100% { transform: translateY(-10vh) scale(1); opacity:0; }
+  }
+  /* LAYOUT */
+  #app { position:relative; z-index:1; }
+  /* ONBOARDING */
+  #onboarding {
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-height:100vh; padding:2rem; text-align:center;
+  }
+  /* NAV */
+  #main { display:none; min-height:100vh; }
+  #navbar {
+    position:fixed; bottom:0; left:0; right:0;
+    background: rgba(16,16,26,0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    display:flex; z-index:100; padding:0.5rem 0;
+  }
+  .nav-btn {
+    flex:1; display:flex; flex-direction:column; align-items:center;
+    gap:4px; padding:0.5rem; border:none; background:none;
+    color: var(--text3); cursor:pointer; transition:all 0.2s;
+    font-size:0.65rem; letter-spacing:0.05em;
+  }
+  .nav-btn.active { color: var(--blue2); }
+  .nav-btn .nav-icon { font-size:1.3rem; transition: transform 0.2s; }
+  .nav-btn.active .nav-icon { transform: scale(1.2); filter: drop-shadow(0 0 8px var(--blue)); }
+  /* SCREENS */
+  .screen { display:none; padding:1rem 1rem 5rem; max-width:480px; margin:0 auto; }
+  .screen.active { display:block; }
+  /* KAEL */
+  .kael-container { position:relative; width:80px; height:80px; }
+  .kael-flame {
+    width:80px; height:80px;
+    background: radial-gradient(ellipse at 50% 70%, #1d4ed8 0%, #60a5fa 40%, #93c5fd 70%, transparent 100%);
+    border-radius: 50% 50% 40% 40%;
+    animation: flicker 2s ease-in-out infinite, pulse-kael 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 15px #60a5fa) drop-shadow(0 0 30px #1d4ed8);
+    position:relative;
+  }
+  .kael-eyes {
+    position:absolute; top:28px; left:50%; transform:translateX(-50%);
+    display:flex; gap:10px;
+  }
+  .kael-eye {
+    width:8px; height:8px; background:#fff;
+    border-radius:50%; animation: blink 4s ease-in-out infinite;
+    box-shadow: 0 0 6px #fff;
+  }
+  @keyframes flicker {
+    0%,100% { border-radius: 50% 50% 40% 40%; transform: scale(1) rotate(-2deg); }
+    25% { border-radius: 45% 55% 45% 45%; transform: scale(1.05) rotate(1deg); }
+    50% { border-radius: 55% 45% 40% 50%; transform: scale(0.97) rotate(-1deg); }
+    75% { border-radius: 48% 52% 42% 48%; transform: scale(1.03) rotate(2deg); }
+  }
+  @keyframes pulse-kael {
+    0%,100% { filter: drop-shadow(0 0 15px #60a5fa) drop-shadow(0 0 30px #1d4ed8); }
+    50% { filter: drop-shadow(0 0 25px #93c5fd) drop-shadow(0 0 50px #3b82f6); }
+  }
+  @keyframes blink {
+    0%,90%,100% { transform: scaleY(1); }
+    95% { transform: scaleY(0.1); }
+  }
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius:16px; padding:1.2rem;
+    margin-bottom:1rem;
+  }
+  .card-glow { box-shadow: var(--glow); border-color: rgba(79,142,247,0.3); }
+  .card-gold { box-shadow: var(--glow-gold); border-color: rgba(245,158,11,0.3); }
+  .card-purple { box-shadow: var(--glow-purple); border-color: rgba(139,92,246,0.3); }
+  /* XP BAR */
+  .xp-bar-container { background:var(--bg3); border-radius:99px; height:8px; overflow:hidden; position:relative; }
+  .xp-bar-fill {
+    height:100%; border-radius:99px;
+    background: linear-gradient(90deg, var(--blue), var(--purple));
+    transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1);
+    position:relative; overflow:hidden;
+  }
+  .xp-bar-fill::after {
+    content:''; position:absolute; top:0; left:-100%;
+    width:100%; height:100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+  }
+  @keyframes shimmer { 100% { left:100%; } }
+  /* BUTTONS */
+  .btn {
+    border:none; cursor:pointer; border-radius:12px;
+    font-weight:700; letter-spacing:0.05em;
+    transition:all 0.2s; position:relative; overflow:hidden;
+  }
+  .btn::before {
+    content:''; position:absolute; top:50%; left:50%;
+    width:0; height:0; background:rgba(255,255,255,0.1);
+    border-radius:50%; transform:translate(-50%,-50%);
+    transition:all 0.4s;
+  }
+  .btn:active::before { width:300px; height:300px; }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    color:#fff; padding:0.9rem 2rem; font-size:1rem;
+    box-shadow: 0 4px 20px rgba(79,142,247,0.4);
+  }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow: 0 8px 30px rgba(79,142,247,0.5); }
+  .btn-gold {
+    background: linear-gradient(135deg, var(--gold), #ef4444);
+    color:#fff; padding:0.7rem 1.5rem; font-size:0.9rem;
+    box-shadow: 0 4px 15px rgba(245,158,11,0.3);
+  }
+  .btn-outline {
+    background:transparent; color:var(--blue2);
+    border:1px solid var(--blue2); padding:0.6rem 1.2rem;
+    font-size:0.85rem;
+  }
+  .btn-sm { padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; }
+  .btn-green { background:linear-gradient(135deg,var(--green),#059669); color:#fff; }
+  /* BADGE */
+  .badge {
+    display:inline-flex; align-items:center; gap:4px;
+    padding:3px 10px; border-radius:99px; font-size:0.72rem; font-weight:700;
+    letter-spacing:0.05em;
+  }
+  .badge-blue { background:rgba(79,142,247,0.15); color:var(--blue2); border:1px solid rgba(79,142,247,0.3); }
+  .badge-gold { background:rgba(245,158,11,0.15); color:var(--gold2); border:1px solid rgba(245,158,11,0.3); }
+  .badge-purple { background:rgba(139,92,246,0.15); color:var(--purple2); border:1px solid rgba(139,92,246,0.3); }
+  .badge-green { background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3); }
+  /* QUEST */
+  .quest-item {
+    background:var(--card2); border:1px solid var(--border);
+    border-radius:12px; padding:1rem; margin-bottom:0.7rem;
+    display:flex; align-items:center; gap:1rem; transition:all 0.3s;
+  }
+  .quest-item.done { opacity:0.6; border-color: var(--green); background: rgba(16,185,129,0.05); }
+  .quest-icon { font-size:1.8rem; flex-shrink:0; }
+  .quest-info { flex:1; }
+  .quest-name { font-weight:700; font-size:0.95rem; margin-bottom:3px; }
+  .quest-desc { font-size:0.8rem; color:var(--text2); }
+  .quest-xp { font-weight:700; font-size:0.85rem; color:var(--gold2); }
+  .quest-btn { flex-shrink:0; }
+  .check-icon { font-size:1.5rem; }
+  /* TIMER */
+  .timer-ring {
+    width:150px; height:150px; position:relative; margin:0 auto;
+  }
+  .timer-ring svg { transform:rotate(-90deg); }
+  .timer-ring circle { fill:none; stroke-width:8; }
+  .timer-ring .bg { stroke:var(--border); }
+  .timer-ring .progress { stroke: url(#timerGrad); stroke-linecap:round; transition: stroke-dashoffset 1s linear; }
+  .timer-text { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; }
+  .timer-value { font-size:2rem; font-weight:800; }
+  .timer-label { font-size:0.7rem; color:var(--text2); letter-spacing:0.1em; text-transform:uppercase; }
+  /* APPS GRID */
+  .apps-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0.7rem; }
+  .app-tile {
+    background:var(--card2); border:1px solid var(--border);
+    border-radius:12px; padding:0.8rem 0.5rem; text-align:center;
+    cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden;
+  }
+  .app-tile.blocked { border-color:rgba(239,68,68,0.4); }
+  .app-tile.unlocked { border-color:rgba(16,185,129,0.4); background:rgba(16,185,129,0.05); }
+  .app-tile .app-icon { font-size:2rem; display:block; margin-bottom:4px; }
+  .app-tile .app-name { font-size:0.72rem; font-weight:600; }
+  .app-tile .app-time { font-size:0.65rem; color:var(--text2); margin-top:2px; }
+  .blocked-overlay {
+    position:absolute; top:0; left:0; right:0; bottom:0;
+    background:rgba(239,68,68,0.1);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1rem; pointer-events:none;
+  }
+  /* MAP */
+  .map-zone {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:16px; padding:1.2rem; margin-bottom:1rem;
+    position:relative; overflow:hidden; cursor:pointer; transition:all 0.2s;
+  }
+  .map-zone.locked { opacity:0.5; cursor:not-allowed; }
+  .map-zone.current { border-color:rgba(79,142,247,0.5); box-shadow:var(--glow); }
+  .map-zone.done { border-color:rgba(245,158,11,0.4); }
+  .map-zone-bg { position:absolute; top:0; left:0; right:0; bottom:0; opacity:0.05; font-size:8rem; display:flex; align-items:center; justify-content:center; pointer-events:none; }
+  .map-zone-content { position:relative; z-index:1; }
+  /* SKILLS */
+  .skill-tree { display:grid; grid-template-columns:repeat(2,1fr); gap:0.8rem; }
+  .skill-node {
+    background:var(--card2); border:1px solid var(--border);
+    border-radius:12px; padding:1rem; text-align:center; cursor:pointer; transition:all 0.2s;
+  }
+  .skill-node.maxed { border-color:rgba(245,158,11,0.5); background:rgba(245,158,11,0.05); }
+  .skill-node:hover:not(.maxed) { border-color:rgba(79,142,247,0.4); transform:scale(1.02); }
+  .skill-icon { font-size:2rem; margin-bottom:6px; }
+  .skill-name { font-weight:700; font-size:0.9rem; margin-bottom:4px; }
+  .skill-desc { font-size:0.72rem; color:var(--text2); margin-bottom:8px; }
+  .skill-levels { display:flex; gap:3px; justify-content:center; }
+  .skill-dot { width:10px; height:10px; border-radius:50%; border:1px solid var(--border); }
+  .skill-dot.filled { background: linear-gradient(135deg, var(--gold), var(--gold2)); border-color:var(--gold); }
+  /* LEAGUE */
+  .league-podium {
+    display:flex; align-items:flex-end; justify-content:center;
+    gap:0.5rem; margin:1rem 0;
+  }
+  .podium-place {
+    flex:1; max-width:100px; text-align:center;
+  }
+  .podium-bar {
+    border-radius:12px 12px 0 0; display:flex; flex-direction:column;
+    align-items:center; justify-content:flex-end; padding:0.5rem 0.3rem;
+  }
+  .podium-bar.gold-p { background:linear-gradient(180deg,#f59e0b22,#f59e0b11); border:1px solid #f59e0b55; height:120px; }
+  .podium-bar.silver-p { background:linear-gradient(180deg,#94a3b822,#94a3b811); border:1px solid #94a3b855; height:90px; }
+  .podium-bar.bronze-p { background:linear-gradient(180deg,#92400e22,#92400e11); border:1px solid #92400e55; height:70px; }
+  /* NOTIFICATION */
+  #notif {
+    position:fixed; top:1rem; left:50%; transform:translateX(-50%) translateY(-100px);
+    background: linear-gradient(135deg, var(--card), var(--card2));
+    border:1px solid var(--border); border-radius:14px;
+    padding:0.8rem 1.5rem; z-index:9999; text-align:center;
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5); min-width:200px;
+    backdrop-filter: blur(20px);
+  }
+  #notif.show { transform: translateX(-50%) translateY(0); }
+  /* ONBOARDING */
+  .onboard-logo {
+    font-size:3rem; font-weight:900; letter-spacing:0.2em;
+    background: linear-gradient(135deg, var(--blue), var(--purple), var(--gold));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    margin:1.5rem 0 0.5rem;
+    text-shadow: none;
+  }
+  .onboard-slogan { font-size:0.9rem; color:var(--text2); letter-spacing:0.15em; margin-bottom:2rem; }
+  .onboard-step { display:none; width:100%; max-width:400px; }
+  .onboard-step.active { display:block; }
+  .input-field {
+    width:100%; background:var(--card2); border:1px solid var(--border);
+    border-radius:12px; padding:0.9rem 1rem; color:var(--text);
+    font-size:1rem; outline:none; transition:border 0.2s; margin-bottom:1rem;
+  }
+  .input-field:focus { border-color:var(--blue2); }
+  /* PROFILE */
+  .profile-avatar {
+    width:80px; height:80px; border-radius:50%;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    display:flex; align-items:center; justify-content:center;
+    font-size:2rem; margin:0 auto 1rem;
+    box-shadow: var(--glow);
+  }
+  /* BOSS */
+  .boss-card {
+    background: linear-gradient(135deg, #1a0a2e, #0a0f1a);
+    border:1px solid rgba(139,92,246,0.4); border-radius:20px;
+    padding:1.5rem; margin-bottom:1rem; text-align:center;
+    box-shadow: var(--glow-purple);
+    position:relative; overflow:hidden;
+  }
+  .boss-hp-bar { background:rgba(239,68,68,0.2); border-radius:99px; height:12px; overflow:hidden; margin:1rem 0; }
+  .boss-hp-fill { height:100%; background:linear-gradient(90deg,#ef4444,#dc2626); border-radius:99px; transition:width 1s; }
+  /* STATS ROW */
+  .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:0.7rem; margin-bottom:1rem; }
+  .stat-box {
+    background:var(--card2); border:1px solid var(--border);
+    border-radius:12px; padding:0.8rem; text-align:center;
+  }
+  .stat-value { font-size:1.4rem; font-weight:800; }
+  .stat-label { font-size:0.65rem; color:var(--text2); letter-spacing:0.08em; text-transform:uppercase; margin-top:2px; }
+  /* CHEST */
+  .chest-item {
+    background:var(--card2); border:1px solid var(--border);
+    border-radius:14px; padding:1rem; display:flex; align-items:center;
+    gap:1rem; margin-bottom:0.7rem; cursor:pointer; transition:all 0.2s;
+  }
+  .chest-item:hover { border-color:rgba(245,158,11,0.4); transform:scale(1.01); }
+  .chest-emoji { font-size:2.5rem; }
+  /* ANIMATE */
+  @keyframes fadeInUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes popIn { from { transform:scale(0.5); opacity:0; } to { transform:scale(1); opacity:1; } }
+  @keyframes levelUp {
+    0% { transform:scale(1); }
+    50% { transform:scale(1.1); filter: brightness(1.5); }
+    100% { transform:scale(1); }
+  }
+  .fade-in { animation: fadeInUp 0.4s ease both; }
+  /* MODAL */
+  #modal-overlay {
+    position:fixed; top:0; left:0; right:0; bottom:0;
+    background:rgba(0,0,0,0.7); backdrop-filter:blur(10px);
+    z-index:500; display:none; align-items:center; justify-content:center; padding:1rem;
+  }
+  #modal-overlay.show { display:flex; }
+  #modal-box {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:20px; padding:2rem; max-width:380px; width:100%;
+    text-align:center; animation: popIn 0.3s ease;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  /* HEADER */
+  .screen-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.2rem; padding-top:0.5rem; }
+  .screen-title { font-size:1.3rem; font-weight:800; letter-spacing:0.05em; }
+  /* LEAGUE ITEM */
+  .league-item {
+    background:var(--card2); border:1px solid var(--border);
+    border-radius:12px; padding:0.8rem 1rem; margin-bottom:0.6rem;
+    display:flex; align-items:center; gap:1rem;
+  }
+  .league-rank { font-size:1.1rem; font-weight:800; width:30px; text-align:center; }
+  .league-name { flex:1; font-weight:600; }
+  .league-xp { font-size:0.85rem; color:var(--gold2); font-weight:700; }
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width:4px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:99px; }
+  /* DIVIDER */
+  .divider { height:1px; background:var(--border); margin:1rem 0; }
+  /* EARNING ITEM */
+  .earn-row {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0.8rem 0; border-bottom:1px solid var(--border);
+  }
+  .earn-row:last-child { border-bottom:none; }
+  /* SETUP EXERCISE */
+  .exercise-setup {
+    display:grid; grid-template-columns:1fr 1fr; gap:0.7rem;
+  }
+  .exercise-tile {
+    background:var(--card2); border:2px solid var(--border);
+    border-radius:12px; padding:1rem; text-align:center; cursor:pointer; transition:all 0.2s;
+  }
+  .exercise-tile.selected { border-color:var(--blue2); background:rgba(79,142,247,0.1); }
+  .exercise-tile .ex-icon { font-size:2rem; margin-bottom:4px; }
+  .exercise-tile .ex-name { font-size:0.85rem; font-weight:700; }
+  .exercise-tile .ex-xp { font-size:0.72rem; color:var(--gold2); }
+</style>
+</head>
+<body>
+<div id="particles"></div>
+
+<!-- NOTIFICATION -->
+<div id="notif">
+  <div id="notif-icon" style="font-size:1.5rem"></div>
+  <div id="notif-text" style="font-weight:700;margin-top:4px"></div>
+</div>
+
+<!-- MODAL -->
+<div id="modal-overlay">
+  <div id="modal-box">
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<div id="app">
+  <!-- ONBOARDING -->
+  <div id="onboarding">
+    <div style="position:relative;display:inline-block">
+      <div class="kael-container">
+        <div class="kael-flame"></div>
+        <div class="kael-eyes"><div class="kael-eye"></div><div class="kael-eye"></div></div>
+      </div>
+    </div>
+    <div class="onboard-logo">ASCENSION</div>
+    <div class="onboard-slogan">BOUGE. PROGRESSE. DÉBLOQUE TON POTENTIEL.</div>
+
+    <!-- Step 1: Welcome -->
+    <div class="onboard-step active" id="step-1">
+      <div style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem">Bienvenue, Ascendant</div>
+      <div style="color:var(--text2);font-size:0.9rem;margin-bottom:1.5rem;line-height:1.6">
+        Je suis <strong style="color:var(--flame2)">Kael</strong>, ta flamme guide.<br>
+        Ensemble, on va transformer tes efforts réels en puissance numérique.<br><br>
+        Tu veux du temps d'écran ? <strong>Gagne-le.</strong>
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="nextStep(2)">Commencer l'aventure ⚔️</button>
+    </div>
+
+    <!-- Step 2: Name -->
+    <div class="onboard-step" id="step-2">
+      <div style="font-size:1.1rem;font-weight:700;margin-bottom:1rem">Quel est ton nom, Ascendant ?</div>
+      <input class="input-field" id="name-input" placeholder="Ton nom de guerrier..." maxlength="20">
+      <button class="btn btn-primary" style="width:100%" onclick="nextStep(3)">Continuer →</button>
+    </div>
+
+    <!-- Step 3: Goal -->
+    <div class="onboard-step" id="step-3">
+      <div style="font-size:1.1rem;font-weight:700;margin-bottom:1rem">Ton objectif principal ?</div>
+      <div class="exercise-setup" style="margin-bottom:1rem">
+        <div class="exercise-tile" onclick="selectGoal(this,'Sport')"><div class="ex-icon">🏋️</div><div class="ex-name">Sport</div></div>
+        <div class="exercise-tile" onclick="selectGoal(this,'Discipline')"><div class="ex-icon">🧠</div><div class="ex-name">Discipline</div></div>
+        <div class="exercise-tile" onclick="selectGoal(this,'Santé')"><div class="ex-icon">💪</div><div class="ex-name">Santé</div></div>
+        <div class="exercise-tile" onclick="selectGoal(this,'Productivité')"><div class="ex-icon">🚀</div><div class="ex-name">Productivité</div></div>
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="nextStep(4)">Continuer →</button>
+    </div>
+
+    <!-- Step 4: Apps to block -->
+    <div class="onboard-step" id="step-4">
+      <div style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem">Quelles apps bloquer ?</div>
+      <div style="color:var(--text2);font-size:0.85rem;margin-bottom:1rem">Tu devras mériter du temps sur ces apps.</div>
+      <div id="setup-apps-grid" class="apps-grid" style="margin-bottom:1rem"></div>
+      <button class="btn btn-primary" style="width:100%" onclick="finishOnboarding()">🔥 Lancer l'aventure !</button>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="main">
+    <!-- SCREEN: HOME -->
+    <div class="screen active" id="screen-home">
+      <!-- Header Kael -->
+      <div class="card card-glow" style="display:flex;align-items:center;gap:1rem;margin-top:0.5rem">
+        <div class="kael-container" style="width:55px;height:55px;flex-shrink:0">
+          <div class="kael-flame" style="width:55px;height:55px"></div>
+          <div class="kael-eyes" style="top:18px;gap:7px"><div class="kael-eye" style="width:6px;height:6px"></div><div class="kael-eye" style="width:6px;height:6px"></div></div>
+        </div>
+        <div style="flex:1">
+          <div id="kael-msg" style="font-size:0.85rem;color:var(--flame2);font-style:italic;line-height:1.4">"Chaque rep te rapproche du sommet, Ascendant."</div>
+        </div>
+      </div>
+
+      <!-- Player Card -->
+      <div class="card" id="player-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem">
+          <div>
+            <div style="font-size:0.72rem;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase">Ascendant</div>
+            <div id="player-name-display" style="font-size:1.3rem;font-weight:800"></div>
+            <div id="player-title" style="font-size:0.8rem;color:var(--gold2)"></div>
+          </div>
+          <div style="text-align:right">
+            <div id="player-level-badge" style="font-size:2rem;font-weight:900;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Nv.1</div>
+            <div id="player-rank" style="font-size:0.8rem;color:var(--text2)"></div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text2);margin-bottom:4px">
+          <span>XP</span>
+          <span id="xp-text">0 / 100</span>
+        </div>
+        <div class="xp-bar-container">
+          <div class="xp-bar-fill" id="xp-bar" style="width:0%"></div>
+        </div>
+        <div id="kael-evolution" style="text-align:center;margin-top:0.7rem;font-size:0.72rem;color:var(--text3)"></div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-value" id="stat-xp-day" style="color:var(--gold2)">0</div>
+          <div class="stat-label">XP Aujourd'hui</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="stat-streak" style="color:var(--red)">🔥0</div>
+          <div class="stat-label">Série</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="stat-time-earned" style="color:var(--green)">0m</div>
+          <div class="stat-label">Temps gagné</div>
+        </div>
+      </div>
+
+      <!-- Daily Quests -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.7rem">
+        <div style="font-weight:800;font-size:1rem">📜 Quêtes du Jour</div>
+        <div id="quest-progress-badge" class="badge badge-blue">0/3</div>
+      </div>
+      <div id="quests-container"></div>
+
+      <!-- Weekly Boss -->
+      <div class="boss-card" id="boss-section">
+        <div style="font-size:0.75rem;color:var(--purple2);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem">👹 Boss Hebdomadaire</div>
+        <div id="boss-name" style="font-size:1.4rem;font-weight:900;margin-bottom:0.3rem"></div>
+        <div id="boss-desc" style="font-size:0.8rem;color:var(--text2);margin-bottom:0.5rem"></div>
+        <div class="boss-hp-bar">
+          <div class="boss-hp-fill" id="boss-hp-bar" style="width:100%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text2)">
+          <span id="boss-hp-text">HP: 100/100</span>
+          <span id="boss-reward-text" style="color:var(--gold2)">Récompense: 1000 XP + Coffre Épique</span>
+        </div>
+        <div style="margin-top:0.8rem;display:flex;gap:0.5rem;flex-wrap:wrap;justify-content:center" id="boss-objectives"></div>
+      </div>
+    </div>
+
+    <!-- SCREEN: EARN TIME -->
+    <div class="screen" id="screen-earn">
+      <div class="screen-header">
+        <div class="screen-title">⏱ Gagner du Temps</div>
+        <div id="total-time-display" class="badge badge-green">0 min disponible</div>
+      </div>
+
+      <!-- Apps Blocked -->
+      <div style="font-weight:700;font-size:0.9rem;margin-bottom:0.7rem;color:var(--text2)">Applications bloquées</div>
+      <div id="apps-grid" class="apps-grid" style="margin-bottom:1.2rem"></div>
+
+      <!-- Earn Section -->
+      <div class="card card-gold">
+        <div style="font-weight:800;font-size:1rem;margin-bottom:1rem">💪 Effectuer un exercice</div>
+        <div id="earn-exercises"></div>
+      </div>
+
+      <!-- Active Timer -->
+      <div class="card" id="timer-card" style="display:none;text-align:center">
+        <div style="font-weight:800;font-size:1rem;margin-bottom:1rem" id="timer-activity-name"></div>
+        <div class="timer-ring">
+          <svg width="150" height="150" viewBox="0 0 150 150">
+            <defs>
+              <linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#4f8ef7"/>
+                <stop offset="100%" style="stop-color:#8b5cf6"/>
+              </linearGradient>
+            </defs>
+            <circle class="bg" cx="75" cy="75" r="65"/>
+            <circle class="progress" id="timer-circle" cx="75" cy="75" r="65"
+              stroke-dasharray="408.4" stroke-dashoffset="0"/>
+          </svg>
+          <div class="timer-text">
+            <div class="timer-value" id="timer-count">0</div>
+            <div class="timer-label" id="timer-sub">reps restantes</div>
+          </div>
+        </div>
+        <div style="margin-top:1rem;color:var(--text2);font-size:0.85rem" id="timer-instruction"></div>
+        <div style="display:flex;gap:0.7rem;justify-content:center;margin-top:1rem">
+          <button class="btn btn-green btn-sm" onclick="completeActivity()">✅ Terminé !</button>
+          <button class="btn btn-outline btn-sm" onclick="cancelActivity()">Annuler</button>
+        </div>
+      </div>
+
+      <!-- Earn history -->
+      <div style="font-weight:700;font-size:0.9rem;margin:1rem 0 0.7rem;color:var(--text2)">Taux d'échange</div>
+      <div class="card">
+        <div id="earn-rates"></div>
+      </div>
+    </div>
+
+    <!-- SCREEN: MAP -->
+    <div class="screen" id="screen-map">
+      <div class="screen-header">
+        <div class="screen-title">🌍 Carte du Monde</div>
+        <div id="map-zone-badge" class="badge badge-purple">Zone 1</div>
+      </div>
+      <div id="map-container"></div>
+    </div>
+
+    <!-- SCREEN: SKILLS -->
+    <div class="screen" id="screen-skills">
+      <div class="screen-header">
+        <div class="screen-title">⚔️ Compétences</div>
+        <div class="badge badge-purple" id="skill-points-badge">0 pts</div>
+      </div>
+      <div style="font-size:0.85rem;color:var(--text2);margin-bottom:1rem">Investis tes points dans des spécialisations.</div>
+      <div class="skill-tree" id="skill-tree"></div>
+
+      <div style="margin-top:1.2rem;font-weight:800;font-size:1rem;margin-bottom:0.7rem">🏆 Ligues</div>
+      <div id="league-section"></div>
+
+      <div style="margin-top:1.2rem;font-weight:800;font-size:1rem;margin-bottom:0.7rem">🎁 Coffres</div>
+      <div id="chests-section"></div>
+    </div>
+
+    <!-- SCREEN: PROFILE -->
+    <div class="screen" id="screen-profile">
+      <div class="screen-header">
+        <div class="screen-title">👤 Profil</div>
+        <button class="btn btn-outline btn-sm" onclick="resetGame()">Reset</button>
+      </div>
+      <div class="card" style="text-align:center">
+        <div class="profile-avatar" id="profile-avatar">🔥</div>
+        <div style="font-size:1.4rem;font-weight:800" id="profile-name"></div>
+        <div style="color:var(--gold2);font-size:0.9rem;margin:4px 0" id="profile-title-display"></div>
+        <div class="badge badge-blue" id="profile-rank-display" style="margin:0 auto"></div>
+      </div>
+      <div class="stats-row" style="margin-top:1rem">
+        <div class="stat-box">
+          <div class="stat-value" id="profile-total-xp" style="color:var(--blue2)">0</div>
+          <div class="stat-label">XP Total</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="profile-level" style="color:var(--purple2)">1</div>
+          <div class="stat-label">Niveau</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="profile-exercises" style="color:var(--green)">0</div>
+          <div class="stat-label">Exercices</div>
+        </div>
+      </div>
+
+      <!-- Share -->
+      <div style="font-weight:800;font-size:1rem;margin:1rem 0 0.7rem">📢 Partager</div>
+      <div class="card" style="text-align:center">
+        <div style="font-size:0.85rem;color:var(--text2);margin-bottom:1rem">Montre ta progression à tes amis</div>
+        <button class="btn btn-primary" style="width:100%" onclick="shareStats()">📸 Copier mes stats</button>
+        <div id="share-copied" style="color:var(--green);font-size:0.8rem;margin-top:0.7rem;display:none">✅ Copié ! Colle ça sur Discord, Twitter ou Reddit.</div>
+      </div>
+
+      <!-- Titles -->
+      <div style="font-weight:800;font-size:1rem;margin:1rem 0 0.7rem">🏅 Titres débloqués</div>
+      <div id="titles-section"></div>
+
+      <!-- Cosmetics -->
+      <div style="font-weight:800;font-size:1rem;margin:1rem 0 0.7rem">🎨 Thèmes</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.7rem" id="themes-section"></div>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav id="navbar">
+      <button class="nav-btn active" onclick="showScreen('home',this)">
+        <span class="nav-icon">🏠</span><span>Accueil</span>
+      </button>
+      <button class="nav-btn" onclick="showScreen('earn',this)">
+        <span class="nav-icon">⏱</span><span>Gagner</span>
+      </button>
+      <button class="nav-btn" onclick="showScreen('map',this)">
+        <span class="nav-icon">🌍</span><span>Carte</span>
+      </button>
+      <button class="nav-btn" onclick="showScreen('skills',this)">
+        <span class="nav-icon">⚔️</span><span>Compétences</span>
+      </button>
+      <button class="nav-btn" onclick="showScreen('profile',this)">
+        <span class="nav-icon">👤</span><span>Profil</span>
+      </button>
+    </nav>
+  </div>
+</div>
+
+<script>
+// ==================== GAME DATA ====================
+const RANKS = [
+  {level:1,name:'Recrue',color:'#94a3b8'},{level:10,name:'Chasseur',color:'#4f8ef7'},
+  {level:25,name:'Vétéran',color:'#8b5cf6'},{level:50,name:'Maître',color:'#f59e0b'},
+  {level:75,name:'Légende',color:'#ef4444'},{level:100,name:'Ascendant',color:'#60a5fa'}
+];
+const KAEL_EVOLUTIONS = [
+  {level:1,name:'Étincelle',emoji:'✨'},{level:10,name:'Flamme',emoji:'🔥'},
+  {level:25,name:'Esprit',emoji:'💙'},{level:50,name:'Gardien',emoji:'🛡️'},
+  {level:75,name:'Sage',emoji:'🌟'},{level:100,name:'Ascendant',emoji:'⚡'}
+];
+const TITLES = [
+  {id:'determined',name:'Le Déterminé',level:1},{id:'hunter',name:'Chasseur',level:10},
+  {id:'warrior',name:'Guerrier',level:15},{id:'hero',name:'Héros',level:25},
+  {id:'legend',name:'Légende',level:50},{id:'monarch',name:'Monarque',level:75},
+  {id:'ascendant',name:'Ascendant',level:100}
+];
+const EXERCISES = [
+  {id:'squat10',name:'10 Squats',icon:'🦵',xp:20,time:50,reps:10,type:'reps'},
+  {id:'squat20',name:'20 Squats',icon:'🦵',xp:40,time:100,reps:20,type:'reps'},
+  {id:'push10',name:'10 Pompes',icon:'💪',xp:30,time:75,reps:10,type:'reps'},
+  {id:'push20',name:'20 Pompes',icon:'💪',xp:60,time:150,reps:20,type:'reps'},
+  {id:'plank5',name:'5 min Gainage',icon:'🏋️',xp:50,time:120,secs:300,type:'timer'},
+  {id:'walk15',name:'15 min Marche',icon:'🚶',xp:40,time:80,secs:900,type:'timer'},
+  {id:'walk30',name:'30 min Marche',icon:'🚶',xp:100,time:200,secs:1800,type:'timer'},
+];
+const DAILY_QUESTS_POOL = [
+  {id:'q1',name:'Guerrier du matin',desc:'25 squats',icon:'🌅',exercises:['squat10','squat20','squat10'],xp:80,time:60},
+  {id:'q2',name:'Force de frappe',desc:'10 pompes + 10 squats',icon:'⚡',exercises:['push10','squat10'],xp:60,time:45},
+  {id:'q3',name:'Marcheur',desc:'15 min de marche',icon:'👟',exercises:['walk15'],xp:60,time:60},
+  {id:'q4',name:'Fer de lance',desc:'20 pompes',icon:'🗡️',exercises:['push20'],xp:70,time:55},
+  {id:'q5',name:'Endurant',desc:'5 min de gainage',icon:'🛡️',exercises:['plank5'],xp:60,time:50},
+  {id:'q6',name:'Titan',desc:'20 squats + 10 pompes',icon:'🦾',exercises:['squat20','push10'],xp:90,time:80},
+];
+const BOSS_WEEKLY = {
+  name:'Titan de Pierre',desc:'Un colosse de granit surgit des montagnes...',
+  icon:'🗿',maxHp:100,
+  objectives:['300 squats','100 pompes','5 km de marche'],
+  rewards:{xp:1000,chest:'epic',badge:'🏆'}
+};
+const ZONES = [
+  {id:1,name:'Forêt des Débuts',icon:'🌲',color:'#10b981',desc:'Là où tout commence. Les premières épreuves façonnent le guerrier.',unlockLevel:1},
+  {id:2,name:'Montagnes du Chasseur',icon:'⛰️',color:'#4f8ef7',desc:'Les pics glacés testent ta détermination. Seuls les vrais chasseurs s\'élèvent.',unlockLevel:10},
+  {id:3,name:'Citadelle du Maître',icon:'🏰',color:'#8b5cf6',desc:'Forteresse des légendes. Peu atteignent ces murs.',unlockLevel:25},
+  {id:4,name:'Royaume Ascendant',icon:'🌌',color:'#f59e0b',desc:'Le sommet de toute existence. Le lieu des dieux.',unlockLevel:50},
+];
+const SKILLS_DEF = [
+  {id:'force',name:'Force',icon:'⚔️',desc:'Bonus XP sur exercices de force',maxLevel:5,effect:'+10% XP force par niv.'},
+  {id:'discipline',name:'Discipline',icon:'🧠',desc:'Meilleure progression quotidienne',maxLevel:5,effect:'+5% XP total par niv.'},
+  {id:'endurance',name:'Endurance',icon:'🏃',desc:'Bonus sur exercices cardio',maxLevel:5,effect:'+10% XP cardio par niv.'},
+  {id:'focus',name:'Focus',icon:'🎯',desc:'Bonus temps d\'écran gagné',maxLevel:5,effect:'+5% temps par niv.'},
+];
+const LEAGUES = [
+  {name:'Bronze',icon:'🥉',color:'#92400e',minXp:0},
+  {name:'Argent',icon:'🥈',color:'#94a3b8',minXp:500},
+  {name:'Or',icon:'🥇',color:'#f59e0b',minXp:2000},
+  {name:'Platine',icon:'💎',color:'#60a5fa',minXp:5000},
+  {name:'Diamant',icon:'💠',color:'#a78bfa',minXp:10000},
+  {name:'Monarque',icon:'👑',color:'#f59e0b',minXp:25000},
+];
+const KAEL_MESSAGES = [
+  '"Chaque rep te rapproche du sommet, Ascendant."',
+  '"La douleur d\'aujourd\'hui est la force de demain."',
+  '"Tu n\'es pas en train de jouer. Tu deviens réel."',
+  '"Les meilleurs ne se reposent pas. Ils se reconstruisent."',
+  '"Un seul exercice de plus. Toujours un de plus."',
+  '"Le monde Ascendant t\'attend. Mérite-le."',
+  '"Chaque goutte de sueur grave ton histoire."',
+];
+const SETUP_APPS = [
+  {id:'instagram',name:'Instagram',icon:'📸'},
+  {id:'tiktok',name:'TikTok',icon:'🎵'},
+  {id:'youtube',name:'YouTube',icon:'▶️'},
+  {id:'twitter',name:'Twitter/X',icon:'🐦'},
+  {id:'snapchat',name:'Snapchat',icon:'👻'},
+  {id:'netflix',name:'Netflix',icon:'🎬'},
+  {id:'gaming',name:'Gaming',icon:'🎮'},
+  {id:'twitch',name:'Twitch',icon:'💜'},
+  {id:'reddit',name:'Reddit',icon:'🤖'},
+];
+// ==================== STATE ====================
+let G = {};
+let timerInterval = null;
+let timerData = null;
+let currentActivity = null;
+
+function defaultState() {
+  const today = new Date().toDateString();
+  const weekStart = getWeekStart();
+  return {
+    name: '', goal: '', onboarded: false,
+    level: 1, xp: 0, totalXp: 0,
+    skillPoints: 0,
+    skills: {force:0, discipline:0, endurance:0, focus:0},
+    blockedApps: [],
+    unlockedApps: {},
+    totalTimeEarned: 0,
+    xpToday: 0, lastDay: today,
+    streak: 0, lastStreak: today,
+    exerciseCount: 0,
+    quests: [], questsDay: today, questsDone: {},
+    bossHp: 100, bossWeek: weekStart, bossDefeated: false,
+    bossProgress: {squats:0, pushups:0, walk:0},
+    titles: ['determined'], activeTitle: 'determined',
+    unlockedZones: [1], currentZone: 1,
+    chests: [], chestsOpened: 0,
+    theme: 'default',
+    leaderboard: generateLeaderboard(),
+    selectedGoal: '',
+  };
+}
+
+function getWeekStart() {
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() - d.getDay());
+  return d.toDateString();
+}
+
+function generateLeaderboard() {
+  const names = ['ShadowBlade','FrostWarden','IronFist','NightHunter','StormRider','VoidWalker','PhoenixRise','DarkSage'];
+  return names.map((n,i) => ({name:n, xp: Math.floor(Math.random()*3000)+200, level: Math.floor(Math.random()*30)+1}))
+    .sort((a,b)=>b.xp-a.xp);
+}
+
+function save() { localStorage.setItem('ascension_v2', JSON.stringify(G)); }
+function load() {
+  try {
+    const s = localStorage.getItem('ascension_v2');
+    if(s) G = JSON.parse(s);
+    else G = defaultState();
+  } catch(e) { G = defaultState(); }
+}
+
+// ==================== XP & LEVEL ====================
+function xpForLevel(l) { return Math.floor(100 * Math.pow(l, 1.4)); }
+
+function addXP(amount) {
+  const bonusDiscipline = G.skills.discipline * 0.05;
+  const total = Math.floor(amount * (1 + bonusDiscipline));
+  G.xp += total;
+  G.totalXp += total;
+  G.xpToday += total;
+  while(G.xp >= xpForLevel(G.level)) {
+    G.xp -= xpForLevel(G.level);
+    G.level++;
+    onLevelUp(G.level);
+  }
+  checkTitles();
+  checkZones();
+  updateUI();
+  save();
+  return total;
+}
+
+function onLevelUp(level) {
+  G.skillPoints += 1;
+  if(level % 5 === 0) {
+    const types = ['common','rare','epic','legendary'];
+    const idx = Math.min(Math.floor(level/25), 3);
+    G.chests.push({type:types[idx], level});
+  }
+  showModal(`
+    <div style="font-size:3rem;animation:popIn 0.5s ease">⬆️</div>
+    <div style="font-size:1.5rem;font-weight:900;margin:0.5rem 0;background:linear-gradient(135deg,#4f8ef7,#8b5cf6,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent">NIVEAU ${level} !</div>
+    <div style="color:var(--text2);margin-bottom:1rem">Tu montes en puissance, ${G.name}.<br>+1 point de compétence gagné !</div>
+    ${level%5===0?`<div class="badge badge-gold" style="font-size:0.9rem;padding:0.5rem 1rem">🎁 Coffre débloqué !</div>`:''}
+    <br><button class="btn btn-primary" style="margin-top:1rem;width:100%" onclick="closeModal()">Continuer ⚔️</button>
+  `);
+  notify('⬆️', `Niveau ${level} atteint !`);
+}
+
+function getRank() {
+  for(let i=RANKS.length-1;i>=0;i--) {
+    if(G.level >= RANKS[i].level) return RANKS[i];
+  }
+  return RANKS[0];
+}
+
+function getKaelEvolution() {
+  for(let i=KAEL_EVOLUTIONS.length-1;i>=0;i--) {
+    if(G.level >= KAEL_EVOLUTIONS[i].level) return KAEL_EVOLUTIONS[i];
+  }
+  return KAEL_EVOLUTIONS[0];
+}
+
+function checkTitles() {
+  TITLES.forEach(t => {
+    if(G.level >= t.level && !G.titles.includes(t.id)) G.titles.push(t.id);
+  });
+}
+
+function checkZones() {
+  ZONES.forEach(z => {
+    if(G.level >= z.unlockLevel && !G.unlockedZones.includes(z.id)) {
+      G.unlockedZones.push(z.id);
+      G.currentZone = z.id;
+      notify('🌍', `Nouvelle zone : ${z.name} !`);
+    }
+  });
+}
+
+// ==================== DAILY RESET ====================
+function checkDailyReset() {
+  const today = new Date().toDateString();
+  if(G.lastDay !== today) {
+    G.xpToday = 0;
+    G.lastDay = today;
+    G.questsDay = today;
+    G.questsDone = {};
+    G.quests = [];
+    G.unlockedApps = {};
+    const yesterday = G.lastStreak;
+    const diff = (new Date(today) - new Date(yesterday)) / 86400000;
+    if(diff <= 1) G.streak++;
+    else G.streak = 0;
+    G.lastStreak = today;
+    save();
+  }
+  if(G.quests.length === 0) generateDailyQuests();
+  if(G.bossWeek !== getWeekStart()) {
+    G.bossWeek = getWeekStart();
+    G.bossHp = 100;
+    G.bossDefeated = false;
+    G.bossProgress = {squats:0,pushups:0,walk:0};
+    save();
+  }
+}
+
+function generateDailyQuests() {
+  const shuffled = [...DAILY_QUESTS_POOL].sort(()=>Math.random()-0.5);
+  G.quests = shuffled.slice(0,3).map(q=>q.id);
+  save();
+}
+
+// ==================== ONBOARDING ====================
+let currentStep = 1;
+function nextStep(n) {
+  if(n===3) {
+    const name = document.getElementById('name-input').value.trim();
+    if(!name) { notify('⚠️','Entre ton nom de guerrier !'); return; }
+    G.name = name;
+  }
+  if(n===4) {
+    if(!G.selectedGoal) { notify('⚠️','Choisis ton objectif !'); return; }
+  }
+  document.getElementById(`step-${currentStep}`).classList.remove('active');
+  document.getElementById(`step-${n}`).classList.add('active');
+  currentStep = n;
+  if(n===4) renderSetupApps();
+}
+
+function selectGoal(el, goal) {
+  document.querySelectorAll('.exercise-tile').forEach(t=>t.classList.remove('selected'));
+  el.classList.add('selected');
+  G.selectedGoal = goal;
+}
+
+function renderSetupApps() {
+  const grid = document.getElementById('setup-apps-grid');
+  grid.innerHTML = SETUP_APPS.map(app=>`
+    <div class="app-tile" id="setup-${app.id}" onclick="toggleSetupApp('${app.id}',this)">
+      <span class="app-icon">${app.icon}</span>
+      <div class="app-name">${app.name}</div>
+    </div>
+  `).join('');
+}
+
+function toggleSetupApp(id, el) {
+  if(G.blockedApps.includes(id)) {
+    G.blockedApps = G.blockedApps.filter(a=>a!==id);
+    el.classList.remove('blocked');
+    el.style.borderColor='';
+  } else {
+    G.blockedApps.push(id);
+    el.classList.add('blocked');
+    el.style.borderColor='rgba(239,68,68,0.5)';
+  }
+}
+
+function finishOnboarding() {
+  if(G.blockedApps.length === 0) { notify('⚠️','Bloque au moins une application !'); return; }
+  G.onboarded = true;
+  G.quests = [];
+  generateDailyQuests();
+  save();
+  document.getElementById('onboarding').style.display='none';
+  document.getElementById('main').style.display='block';
+  updateUI();
+  notify('🔥', `Bienvenue, ${G.name} ! L'aventure commence !`);
+}
+
+// ==================== ACTIVITIES ====================
+function startActivity(exerciseId) {
+  if(timerData) { notify('⚠️','Un exercice est déjà en cours !'); return; }
+  const ex = EXERCISES.find(e=>e.id===exerciseId);
+  if(!ex) return;
+  currentActivity = exerciseId;
+  document.getElementById('timer-card').style.display='block';
+  document.getElementById('timer-activity-name').textContent = ex.icon + ' ' + ex.name;
+  if(ex.type === 'reps') {
+    startRepsTimer(ex);
+  } else {
+    startCountdownTimer(ex);
+  }
+  document.getElementById('timer-card').scrollIntoView({behavior:'smooth'});
+}
+
+function startRepsTimer(ex) {
+  let done = 0;
+  const total = ex.reps;
+  timerData = {ex, done, total, type:'reps'};
+  updateTimerDisplay();
+  document.getElementById('timer-instruction').textContent = `Appuie sur "Terminé !" quand tu as fini tes ${total} ${ex.name}.`;
+  document.getElementById('timer-sub').textContent = 'répétitions';
+  document.getElementById('timer-count').textContent = total;
+  const circ = document.getElementById('timer-circle');
+  circ.style.strokeDashoffset = '0';
+}
+
+function startCountdownTimer(ex) {
+  let remaining = ex.secs;
+  timerData = {ex, remaining, total:ex.secs, type:'countdown'};
+  document.getElementById('timer-sub').textContent = 'secondes restantes';
+  document.getElementById('timer-instruction').textContent = `${ex.name} en cours. Reste en mouvement !`;
+  updateCountdownDisplay();
+  timerInterval = setInterval(()=>{
+    timerData.remaining--;
+    updateCountdownDisplay();
+    if(timerData.remaining <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      completeActivity();
+    }
+  }, 1000);
+}
+
+function updateCountdownDisplay() {
+  if(!timerData) return;
+  const r = timerData.remaining;
+  const mins = Math.floor(r/60);
+  const secs = r%60;
+  document.getElementById('timer-count').textContent = mins>0?`${mins}:${secs.toString().padStart(2,'0')}`:r;
+  const pct = 1 - (r/timerData.total);
+  const circ = document.getElementById('timer-circle');
+  circ.style.strokeDashoffset = 408.4 * (1-pct);
+}
+
+function updateTimerDisplay() {}
+
+function completeActivity() {
+  if(!timerData) return;
+  if(timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  const ex = timerData.ex;
+  timerData = null;
+  document.getElementById('timer-card').style.display='none';
+  currentActivity = null;
+
+  // XP + Time
+  const focusBonus = G.skills.focus * 0.05;
+  const timeEarned = Math.floor(ex.time * (1 + focusBonus));
+  G.totalTimeEarned += timeEarned;
+  G.exerciseCount++;
+
+  // Update boss progress
+  if(ex.id.includes('squat')) G.bossProgress.squats += ex.reps || 0;
+  if(ex.id.includes('push')) G.bossProgress.pushups += ex.reps || 0;
+  if(ex.id === 'walk30') G.bossProgress.walk += 5;
+  if(ex.id === 'walk15') G.bossProgress.walk += 2.5;
+
+  // Boss damage
+  if(!G.bossDefeated) {
+    const dmg = Math.floor(ex.xp / 10);
+    G.bossHp = Math.max(0, G.bossHp - dmg);
+    if(G.bossHp === 0) defeatBoss();
+  }
+
+  // Unlock app time
+  G.blockedApps.forEach(appId => {
+    if(!G.unlockedApps[appId]) G.unlockedApps[appId] = 0;
+    G.unlockedApps[appId] += timeEarned;
+  });
+
+  const gained = addXP(ex.xp);
+  checkQuestCompletion(ex.id);
+  save();
+  notify('✅', `+${gained} XP | +${timeEarned} min débloquées !`);
+  updateUI();
+}
+
+function cancelActivity() {
+  if(timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  timerData = null;
+  currentActivity = null;
+  document.getElementById('timer-card').style.display='none';
+}
+
+function defeatBoss() {
+  G.bossDefeated = true;
+  G.chests.push({type:'epic', level:G.level});
+  addXP(1000);
+  showModal(`
+    <div style="font-size:3rem">🏆</div>
+    <div style="font-size:1.3rem;font-weight:900;color:var(--gold2);margin:0.5rem 0">BOSS VAINCU !</div>
+    <div style="font-size:2rem;margin:0.5rem 0">🗿 Titan de Pierre</div>
+    <div style="color:var(--text2);margin-bottom:1rem">Incroyable, ${G.name} ! Tu as terrassé le titan !<br><br>+1000 XP + Coffre Épique !</div>
+    <button class="btn btn-gold" style="width:100%" onclick="closeModal()">Réclamer la victoire !</button>
+  `);
+}
+
+// ==================== QUESTS ====================
+function checkQuestCompletion(exerciseId) {
+  G.quests.forEach(qId => {
+    if(G.questsDone[qId]) return;
+    const q = DAILY_QUESTS_POOL.find(x=>x.id===qId);
+    if(!q) return;
+    if(q.exercises.some(e=>e===exerciseId)) {
+      const ex = EXERCISES.find(e=>e.id===exerciseId);
+      if(ex) {
+        G.questsDone[qId] = true;
+        addXP(q.xp);
+        G.totalTimeEarned += q.time;
+        notify('📜', `Quête accomplie : ${q.name} !`);
+        save();
+      }
+    }
+  });
+}
+
+// ==================== UI ====================
+function updateUI() {
+  if(!G.onboarded) return;
+  checkDailyReset();
+  updatePlayerCard();
+  updateQuests();
+  updateBoss();
+  updateEarnScreen();
+  updateMapScreen();
+  updateSkillScreen();
+  updateProfileScreen();
+}
+
+function updatePlayerCard() {
+  const rank = getRank();
+  const kael = getKaelEvolution();
+  const needed = xpForLevel(G.level);
+  const pct = Math.min(100, (G.xp/needed)*100);
+
+  set('player-name-display', G.name);
+  const activeTitle = TITLES.find(t=>t.id===G.activeTitle);
+  set('player-title', activeTitle ? '« '+activeTitle.name+' »' : '');
+  set('player-level-badge', `Nv.${G.level}`);
+  set('player-rank', rank.name);
+  set('xp-text', `${G.xp} / ${needed} XP`);
+  setStyle('xp-bar','width',`${pct}%`);
+  set('stat-xp-day', G.xpToday);
+  set('stat-streak', `🔥${G.streak}`);
+  const totalMins = G.totalTimeEarned;
+  set('stat-time-earned', totalMins >= 60 ? `${Math.floor(totalMins/60)}h${totalMins%60}m` : `${totalMins}m`);
+  set('kael-evolution', `${kael.emoji} Kael : ${kael.name} (Nv.${G.level})`);
+
+  const msg = KAEL_MESSAGES[Math.floor(Math.random()*KAEL_MESSAGES.length)];
+  if(document.getElementById('kael-msg')) document.getElementById('kael-msg').textContent = msg;
+}
+
+function updateQuests() {
+  const container = document.getElementById('quests-container');
+  if(!container) return;
+  const doneCount = G.quests.filter(id=>G.questsDone[id]).length;
+  set('quest-progress-badge', `${doneCount}/${G.quests.length}`);
+  container.innerHTML = G.quests.map(qId=>{
+    const q = DAILY_QUESTS_POOL.find(x=>x.id===qId);
+    if(!q) return '';
+    const done = G.questsDone[qId];
+    return `<div class="quest-item ${done?'done':''} fade-in">
+      <div class="quest-icon">${q.icon}</div>
+      <div class="quest-info">
+        <div class="quest-name">${q.name}</div>
+        <div class="quest-desc">${q.desc}</div>
+        <div class="quest-xp">+${q.xp} XP | +${q.time} min</div>
+      </div>
+      <div class="quest-btn">
+        ${done ? '<span class="check-icon">✅</span>' : `<button class="btn btn-gold btn-sm" onclick="startQuestExercise('${qId}')">Faire</button>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function startQuestExercise(qId) {
+  const q = DAILY_QUESTS_POOL.find(x=>x.id===qId);
+  if(!q) return;
+  const exId = q.exercises[0];
+  showScreen('earn', document.querySelectorAll('.nav-btn')[1]);
+  setTimeout(()=>startActivity(exId), 300);
+}
+
+function updateBoss() {
+  set('boss-name', BOSS_WEEKLY.icon + ' ' + BOSS_WEEKLY.name);
+  set('boss-desc', G.bossDefeated ? '✅ Boss vaincu cette semaine !' : BOSS_WEEKLY.desc);
+  const hpPct = G.bossHp;
+  setStyle('boss-hp-bar','width',`${hpPct}%`);
+  set('boss-hp-text', `HP: ${G.bossHp}/100`);
+  const obj = document.getElementById('boss-objectives');
+  if(obj) obj.innerHTML = BOSS_WEEKLY.objectives.map(o=>`<span class="badge badge-purple">${o}</span>`).join(' ');
+}
+
+function updateEarnScreen() {
+  const appsGrid = document.getElementById('apps-grid');
+  if(appsGrid) {
+    appsGrid.innerHTML = SETUP_APPS.filter(a=>G.blockedApps.includes(a.id)).map(app=>{
+      const mins = G.unlockedApps[app.id] || 0;
+      const unlocked = mins > 0;
+      return `<div class="app-tile ${unlocked?'unlocked':'blocked'}" onclick="useApp('${app.id}')">
+        <span class="app-icon">${app.icon}</span>
+        <div class="app-name">${app.name}</div>
+        <div class="app-time">${unlocked?`${mins} min`:'🔒 Bloqué'}</div>
+        ${!unlocked?'<div class="blocked-overlay">🔒</div>':''}
+      </div>`;
+    }).join('');
+  }
+
+  const totalAvail = G.blockedApps.reduce((s,a)=>s+(G.unlockedApps[a]||0),0);
+  const el = document.getElementById('total-time-display');
+  if(el) el.textContent = `${totalAvail} min disponible${totalAvail!==1?'s':''}`;
+
+  const earnEx = document.getElementById('earn-exercises');
+  if(earnEx) {
+    earnEx.innerHTML = EXERCISES.map(ex=>`
+      <div class="earn-row">
+        <div>
+          <div style="font-weight:700">${ex.icon} ${ex.name}</div>
+          <div style="font-size:0.75rem;color:var(--text2)">+${ex.xp} XP | +${ex.time} min d'écran</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="startActivity('${ex.id}')">Commencer</button>
+      </div>
+    `).join('');
+  }
+
+  const rates = document.getElementById('earn-rates');
+  if(rates) {
+    rates.innerHTML = EXERCISES.map(ex=>`
+      <div class="earn-row">
+        <span style="font-size:0.85rem">${ex.icon} ${ex.name}</span>
+        <span class="badge badge-gold">${ex.time} min</span>
+      </div>
+    `).join('');
+  }
+}
+
+function useApp(appId) {
+  const mins = G.unlockedApps[appId] || 0;
+  const app = SETUP_APPS.find(a=>a.id===appId);
+  if(mins <= 0) {
+    notify('🔒', `${app.name} est bloqué. Fais un exercice !`);
+    return;
+  }
+  showModal(`
+    <div style="font-size:3rem">${app.icon}</div>
+    <div style="font-size:1.2rem;font-weight:800;margin:0.5rem 0">${app.name}</div>
+    <div style="color:var(--green);font-size:1.1rem;font-weight:700;margin-bottom:0.5rem">✅ ${mins} minutes disponibles</div>
+    <div style="color:var(--text2);font-size:0.85rem;margin-bottom:1rem">Tu peux utiliser ${app.name} pendant ${mins} minutes.<br><em>(Sur mobile, ouvre l'app manuellement.)</em></div>
+    <div style="display:flex;gap:0.7rem">
+      <button class="btn btn-green" style="flex:1" onclick="consumeTime('${appId}',30)">Utiliser 30 min</button>
+      <button class="btn btn-outline" style="flex:1" onclick="closeModal()">Plus tard</button>
+    </div>
+  `);
+}
+
+function consumeTime(appId, mins) {
+  const avail = G.unlockedApps[appId] || 0;
+  const used = Math.min(mins, avail);
+  G.unlockedApps[appId] = avail - used;
+  save();
+  closeModal();
+  notify('✅', `${used} min utilisées sur ${SETUP_APPS.find(a=>a.id===appId)?.name}`);
+  updateUI();
+}
+
+function updateMapScreen() {
+  const c = document.getElementById('map-container');
+  if(!c) return;
+  c.innerHTML = ZONES.map(z=>{
+    const unlocked = G.unlockedZones.includes(z.id);
+    const current = G.currentZone === z.id;
+    return `<div class="map-zone ${unlocked?'':'locked'} ${current?'current':''} ${unlocked&&!current?'done':''}" onclick="${unlocked?`selectZone(${z.id})`:''}">
+      <div class="map-zone-bg">${z.icon}</div>
+      <div class="map-zone-content">
+        <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:0.4rem">
+          <span style="font-size:1.5rem">${z.icon}</span>
+          <div>
+            <div style="font-weight:800;font-size:1rem">Zone ${z.id} — ${z.name}</div>
+            <div style="font-size:0.72rem;color:var(--text3)">Requis : Nv.${z.unlockLevel}</div>
+          </div>
+          ${current?`<span class="badge badge-blue" style="margin-left:auto">Actuelle</span>`:''}
+          ${!unlocked?`<span class="badge" style="margin-left:auto;background:rgba(100,116,139,0.2);color:var(--text3)">🔒</span>`:''}
+        </div>
+        <div style="font-size:0.82rem;color:var(--text2)">${z.desc}</div>
+      </div>
+    </div>`;
+  }).join('');
+  const badge = document.getElementById('map-zone-badge');
+  if(badge) {
+    const z = ZONES.find(x=>x.id===G.currentZone);
+    if(z) badge.textContent = z.icon + ' ' + z.name;
+  }
+}
+
+function selectZone(id) {
+  G.currentZone = id;
+  save();
+  updateMapScreen();
+  notify('🌍', `Zone sélectionnée : ${ZONES.find(z=>z.id===id)?.name}`);
+}
+
+function updateSkillScreen() {
+  const skillPtsBadge = document.getElementById('skill-points-badge');
+  if(skillPtsBadge) skillPtsBadge.textContent = `${G.skillPoints} pts`;
+
+  const tree = document.getElementById('skill-tree');
+  if(tree) {
+    tree.innerHTML = SKILLS_DEF.map(sk=>{
+      const lvl = G.skills[sk.id] || 0;
+      const maxed = lvl >= sk.maxLevel;
+      return `<div class="skill-node ${maxed?'maxed':''}" onclick="upgradeSkill('${sk.id}')">
+        <div class="skill-icon">${sk.icon}</div>
+        <div class="skill-name">${sk.name}</div>
+        <div class="skill-desc">${sk.desc}</div>
+        <div style="font-size:0.7rem;color:var(--gold2);margin-bottom:6px">${sk.effect}</div>
+        <div class="skill-levels">
+          ${Array.from({length:sk.maxLevel},(_,i)=>`<div class="skill-dot ${i<lvl?'filled':''}"></div>`).join('')}
+        </div>
+        <div style="font-size:0.7rem;color:var(--text3);margin-top:6px">${maxed?'MAX':lvl===0?'1 pt pour démarrer':`Nv.${lvl}/${sk.maxLevel}`}</div>
+      </div>`;
+    }).join('');
+  }
+
+  const league = document.getElementById('league-section');
+  if(league) {
+    const currentLeague = [...LEAGUES].reverse().find(l=>G.totalXp>=l.minXp) || LEAGUES[0];
+    const nextLeague = LEAGUES[LEAGUES.indexOf(currentLeague)+1];
+    league.innerHTML = `
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem">
+          <span style="font-size:2.5rem">${currentLeague.icon}</span>
+          <div>
+            <div style="font-weight:800;font-size:1.1rem">${currentLeague.name}</div>
+            <div style="font-size:0.8rem;color:var(--text2)">${G.totalXp} XP total</div>
+          </div>
+          ${nextLeague?`<div style="margin-left:auto;text-align:right;font-size:0.75rem;color:var(--text2)">Prochaine ligue :<br><strong style="color:var(--gold2)">${nextLeague.name} (${nextLeague.minXp} XP)</strong></div>`:''}
+        </div>
+        ${LEAGUES.map(l=>`<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.3rem">
+          <span>${l.icon}</span>
+          <div style="flex:1;font-size:0.82rem;font-weight:600">${l.name}</div>
+          <span style="font-size:0.75rem;color:var(--text2)">${l.minXp}+ XP</span>
+          ${G.totalXp>=l.minXp?'<span style="color:var(--green);font-size:0.75rem">✅</span>':'<span style="color:var(--text3);font-size:0.75rem">🔒</span>'}
+        </div>`).join('')}
+      </div>
+      <div style="font-weight:700;font-size:0.9rem;margin:1rem 0 0.7rem;color:var(--text2)">🏅 Classement cette semaine</div>
+      ${renderLeaderboard()}
+    `;
+  }
+
+  const chests = document.getElementById('chests-section');
+  if(chests) {
+    if(G.chests.length === 0) {
+      chests.innerHTML = `<div style="color:var(--text3);font-size:0.85rem;text-align:center;padding:1rem">Atteins tous les 5 niveaux pour obtenir un coffre !</div>`;
+    } else {
+      chests.innerHTML = G.chests.map((c,i)=>{
+        const colors = {common:'#94a3b8',rare:'#4f8ef7',epic:'#8b5cf6',legendary:'#f59e0b'};
+        const icons = {common:'📦',rare:'💎',epic:'🔮',legendary:'👑'};
+        const names = {common:'Commun',rare:'Rare',epic:'Épique',legendary:'Légendaire'};
+        return `<div class="chest-item" onclick="openChest(${i})" style="border-color:${colors[c.type]}33">
+          <span class="chest-emoji">${icons[c.type]}</span>
+          <div>
+            <div style="font-weight:700">Coffre ${names[c.type]}</div>
+            <div style="font-size:0.75rem;color:var(--text2)">Obtenu au niveau ${c.level}</div>
+          </div>
+          <button class="btn btn-gold btn-sm" style="margin-left:auto">Ouvrir</button>
+        </div>`;
+      }).join('');
+    }
+  }
+}
+
+function renderLeaderboard() {
+  const playerEntry = {name:G.name||'Toi', xp:G.totalXp, level:G.level, isPlayer:true};
+  let lb = [...G.leaderboard, playerEntry].sort((a,b)=>b.xp-a.xp).slice(0,8);
+  return `<div class="card">${lb.map((p,i)=>{
+    const medals = ['🥇','🥈','🥉'];
+    return `<div class="league-item" style="${p.isPlayer?'border-color:rgba(79,142,247,0.4);background:rgba(79,142,247,0.05)':''}">
+      <div class="league-rank" style="color:${i<3?['#f59e0b','#94a3b8','#92400e'][i]:'var(--text3)'}">${i<3?medals[i]:i+1}</div>
+      <div class="league-name">${p.isPlayer?'👤 '+p.name:p.name}</div>
+      <div style="font-size:0.75rem;color:var(--text2);margin-right:0.5rem">Nv.${p.level}</div>
+      <div class="league-xp">${p.xp} XP</div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function upgradeSkill(id) {
+  const sk = SKILLS_DEF.find(s=>s.id===id);
+  const lvl = G.skills[id] || 0;
+  if(lvl >= sk.maxLevel) { notify('ℹ️','Compétence au niveau maximum !'); return; }
+  if(G.skillPoints <= 0) { notify('⚠️','Pas assez de points ! Monte de niveau pour en gagner.'); return; }
+  G.skills[id]++;
+  G.skillPoints--;
+  save();
+  updateSkillScreen();
+  notify('⚔️',`${sk.name} amélioré ! Niveau ${G.skills[id]}/${sk.maxLevel}`);
+}
+
+function openChest(idx) {
+  const chest = G.chests[idx];
+  if(!chest) return;
+  G.chests.splice(idx,1);
+  G.chestsOpened++;
+  const rewards = generateChestReward(chest.type);
+  addXP(rewards.xp);
+  save();
+  showModal(`
+    <div style="font-size:4rem;animation:popIn 0.5s ease">${{common:'📦',rare:'💎',epic:'🔮',legendary:'👑'}[chest.type]}</div>
+    <div style="font-size:1.2rem;font-weight:900;color:var(--gold2);margin:0.5rem 0">Coffre ouvert !</div>
+    <div style="color:var(--text2);margin-bottom:1rem">${rewards.desc}</div>
+    <div style="font-size:1.2rem;color:var(--gold2);font-weight:700">+${rewards.xp} XP</div>
+    <br><button class="btn btn-primary" style="margin-top:1rem;width:100%" onclick="closeModal()">Super ! ✨</button>
+  `);
+}
+
+function generateChestReward(type) {
+  const xpMap = {common:[50,150],rare:[150,400],epic:[400,800],legendary:[800,2000]};
+  const [min,max] = xpMap[type];
+  const xp = Math.floor(Math.random()*(max-min)+min);
+  const descs = {
+    common:'Un trésor modeste mais mérité.',
+    rare:'Des ressources précieuses pour ton ascension !',
+    epic:'Un butin digne d\'un vétéran des batailles !',
+    legendary:'La richesse des légendes est à toi, Ascendant !'
+  };
+  return {xp, desc:descs[type]};
+}
+
+function updateProfileScreen() {
+  const rank = getRank();
+  const activeTitle = TITLES.find(t=>t.id===G.activeTitle);
+  set('profile-name', G.name);
+  set('profile-title-display', activeTitle?'« '+activeTitle.name+' »':'');
+  set('profile-rank-display', rank.name+' — Nv.'+G.level);
+  set('profile-total-xp', G.totalXp);
+  set('profile-level', G.level);
+  set('profile-exercises', G.exerciseCount);
+
+  const kael = getKaelEvolution();
+  const avatar = document.getElementById('profile-avatar');
+  if(avatar) avatar.textContent = kael.emoji;
+
+  const titlesSection = document.getElementById('titles-section');
+  if(titlesSection) {
+    titlesSection.innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:0.5rem">
+      ${TITLES.map(t=>{
+        const owned = G.titles.includes(t.id);
+        const active = G.activeTitle === t.id;
+        return `<div class="badge ${owned?(active?'badge-gold':'badge-blue'):'badge-purple'}" style="${!owned?'opacity:0.4':''}"
+          onclick="${owned?`setTitle('${t.id}')`:''}" style="cursor:${owned?'pointer':'default'}">
+          ${active?'✅ ':''}${t.name} ${!owned?`(Nv.${t.level})`:''}
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  const themes = document.getElementById('themes-section');
+  if(themes) {
+    const themeList = [
+      {id:'default',name:'Bleu Cosmos',color:'linear-gradient(135deg,#4f8ef7,#8b5cf6)',locked:false},
+      {id:'fire',name:'Feu & Sang',color:'linear-gradient(135deg,#ef4444,#f59e0b)',locked:G.level<10},
+      {id:'void',name:'Vide',color:'linear-gradient(135deg,#1a1a2e,#4a4a6e)',locked:G.level<25},
+      {id:'gold',name:'Or Légendaire',color:'linear-gradient(135deg,#f59e0b,#fbbf24)',locked:G.level<50},
+      {id:'emerald',name:'Émeraude',color:'linear-gradient(135deg,#10b981,#059669)',locked:G.level<15},
+      {id:'royal',name:'Royal',color:'linear-gradient(135deg,#8b5cf6,#6d28d9)',locked:G.level<30},
+    ];
+    themes.innerHTML = themeList.map(th=>`
+      <div style="background:${th.color};border-radius:12px;height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:${th.locked?'not-allowed':'pointer'};opacity:${th.locked?0.4:1};position:relative;border:2px solid ${G.theme===th.id?'white':'transparent'}"
+        onclick="${!th.locked?`setTheme('${th.id}')`:''}" >
+        <div style="font-size:0.7rem;font-weight:700;color:white;text-shadow:0 1px 3px rgba(0,0,0,0.5)">${th.name}</div>
+        ${th.locked?`<div style="font-size:0.65rem;color:rgba(255,255,255,0.7)">Nv.${{fire:10,void:25,gold:50,emerald:15,royal:30}[th.id]}</div>`:''}
+      </div>
+    `).join('');
+  }
+}
+
+function setTitle(id) {
+  G.activeTitle = id;
+  save();
+  updateProfileScreen();
+  const t = TITLES.find(x=>x.id===id);
+  notify('🏅', `Titre actif : « ${t.name} »`);
+}
+
+function setTheme(id) {
+  G.theme = id;
+  save();
+  updateProfileScreen();
+  notify('🎨', 'Thème appliqué !');
+}
+
+// ==================== NAVIGATION ====================
+function showScreen(name, btn) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(`screen-${name}`).classList.add('active');
+  if(btn) btn.classList.add('active');
+  updateUI();
+}
+
+// ==================== MODAL ====================
+function showModal(html) {
+  document.getElementById('modal-content').innerHTML = html;
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
+document.getElementById('modal-overlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('modal-overlay')) closeModal();
+});
+
+// ==================== NOTIFY ====================
+let notifTimeout;
+function notify(icon, text) {
+  const n = document.getElementById('notif');
+  document.getElementById('notif-icon').textContent = icon;
+  document.getElementById('notif-text').textContent = text;
+  n.classList.add('show');
+  clearTimeout(notifTimeout);
+  notifTimeout = setTimeout(()=>n.classList.remove('show'), 2800);
+}
+
+// ==================== HELPERS ====================
+function set(id, val) { const e=document.getElementById(id); if(e) e.textContent=val; }
+function setStyle(id, prop, val) { const e=document.getElementById(id); if(e) e.style[prop]=val; }
+
+function shareStats() {
+  const rank = getRank();
+  const kael = getKaelEvolution();
+  const text = `⚡ ASCENSION — Mes stats\n\n` +
+    `🏆 Niveau ${G.level} — ${rank.name}\n` +
+    `✨ ${G.totalXp} XP total\n` +
+    `🔥 Série : ${G.streak} jours\n` +
+    `💪 ${G.exerciseCount} exercices complétés\n` +
+    `⏱ ${G.totalTimeEarned} min d'écran gagnées\n` +
+    `${kael.emoji} Kael : ${kael.name}\n\n` +
+    `J'utilise ASCENSION pour mériter mon temps d'écran 💀\n` +
+    `👉 https://tomnogues-cmd.github.io/ASCENSION/`;
+  navigator.clipboard.writeText(text).then(() => {
+    const el = document.getElementById('share-copied');
+    if(el) { el.style.display='block'; setTimeout(()=>el.style.display='none', 4000); }
+  });
+}
+
+function resetGame() {
+  showModal(`
+    <div style="font-size:2rem">⚠️</div>
+    <div style="font-size:1rem;font-weight:700;margin:0.5rem 0">Réinitialiser la partie ?</div>
+    <div style="color:var(--text2);font-size:0.85rem;margin-bottom:1rem">Toute ta progression sera perdue.</div>
+    <div style="display:flex;gap:0.7rem">
+      <button class="btn btn-outline" style="flex:1;color:var(--red);border-color:var(--red)" onclick="confirmReset()">Oui, reset</button>
+      <button class="btn btn-primary" style="flex:1" onclick="closeModal()">Annuler</button>
+    </div>
+  `);
+}
+function confirmReset() {
+  localStorage.removeItem('ascension_v2');
+  closeModal();
+  location.reload();
+}
+
+// ==================== PARTICLES ====================
+function createParticles() {
+  const container = document.getElementById('particles');
+  for(let i=0;i<15;i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random()*3+1;
+    p.style.cssText = `
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}%;
+      animation-duration:${Math.random()*15+8}s;
+      animation-delay:${Math.random()*8}s;
+      opacity:${Math.random()*0.5+0.1};
+    `;
+    container.appendChild(p);
+  }
+}
+
+// ==================== INIT ====================
+load();
+createParticles();
+
+if(G.onboarded) {
+  document.getElementById('onboarding').style.display='none';
+  document.getElementById('main').style.display='block';
+  checkDailyReset();
+  updateUI();
+} else {
+  G = defaultState();
+}
+</script>
+</body>
+</html>

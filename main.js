@@ -18,7 +18,7 @@ function createWindow() {
     show: false,
   });
 
-  win.loadFile('index.html');
+  win.loadFile('game.html');
 
   win.once('ready-to-show', () => {
     win.show();
