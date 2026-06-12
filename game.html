@@ -2,8 +2,14 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ASCENSION">
+<meta name="theme-color" content="#FF6B35">
+<meta name="description" content="Mérite ton temps d'écran. Fais des squats pour débloquer Instagram. RPG gamifié — gratuit.">
 <title>ASCENSION — Bouge. Progresse. Débloque ton potentiel.</title>
+<link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -702,11 +708,15 @@
       </div>
 
       <!-- Share -->
-      <div style="font-weight:800;font-size:1rem;margin:1rem 0 0.7rem">📢 Partager</div>
+      <div style="font-weight:800;font-size:1rem;margin:1rem 0 0.7rem">📢 Partager & Défier</div>
       <div class="card" style="text-align:center">
-        <div style="font-size:0.85rem;color:var(--text2);margin-bottom:1rem">Montre ta progression à tes amis</div>
-        <button class="btn btn-primary" style="width:100%" onclick="shareStats()">📸 Copier mes stats</button>
-        <div id="share-copied" style="color:var(--green);font-size:0.8rem;margin-top:0.7rem;display:none">✅ Copié ! Colle ça sur Discord, Twitter ou Reddit.</div>
+        <div style="font-size:0.85rem;color:var(--text2);margin-bottom:1rem">Montre ta progression ou défie un ami</div>
+        <div style="display:flex;gap:0.6rem;margin-bottom:0.5rem">
+          <button class="btn btn-primary btn-sm" style="flex:1;padding:0.65rem" onclick="shareStats()">📸 Mes stats</button>
+          <button class="btn btn-gold btn-sm" style="flex:1;padding:0.65rem" onclick="challengeFriend()">⚔️ Défier un ami</button>
+        </div>
+        <div id="share-copied" style="color:var(--green);font-size:0.8rem;margin-top:0.5rem;display:none">✅ Copié ! Colle ça sur Discord, Twitter ou Reddit.</div>
+        <div id="challenge-copied" style="color:var(--gold);font-size:0.8rem;margin-top:0.5rem;display:none">⚔️ Défi copié ! Envoie-le à un ami.</div>
       </div>
 
       <!-- Titles -->
@@ -1577,6 +1587,22 @@ function notify(icon, text) {
 function set(id, val) { const e=document.getElementById(id); if(e) e.textContent=val; }
 function setStyle(id, prop, val) { const e=document.getElementById(id); if(e) e.style[prop]=val; }
 
+function challengeFriend() {
+  const exercises = ['10 pompes','20 squats','5 min de gainage','30 min de marche','20 pompes + 10 squats'];
+  const challenge = exercises[Math.floor(Math.random()*exercises.length)];
+  const rank = getRank();
+  const text = `⚔️ DÉFI ASCENSION\n\n` +
+    `${G.name} (Nv.${G.level} ${rank.name}) te lance un défi :\n\n` +
+    `💪 Fais ${challenge} sans t'arrêter.\n\n` +
+    `Si tu relèves le défi, télécharge ASCENSION et montre-moi ton niveau.\n` +
+    `👉 https://tomnogues-cmd.github.io/ASCENSION/\n\n` +
+    `Tu as 24h. ⏳`;
+  navigator.clipboard.writeText(text).then(() => {
+    const el = document.getElementById('challenge-copied');
+    if(el) { el.style.display='block'; setTimeout(()=>el.style.display='none', 4000); }
+  });
+}
+
 function shareStats() {
   const rank = getRank();
   const kael = getKaelEvolution();
@@ -1641,6 +1667,10 @@ if(G.onboarded) {
   updateUI();
 } else {
   G = defaultState();
+}
+
+if('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
 }
 </script>
 </body>

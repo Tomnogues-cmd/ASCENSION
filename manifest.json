@@ -1,0 +1,27 @@
+{
+  "name": "ASCENSION — Gagne ton temps d'écran",
+  "short_name": "ASCENSION",
+  "description": "Mérite ton temps d'écran par le sport. RPG gamifié — squats, pompes, marche.",
+  "start_url": "/ASCENSION/",
+  "display": "standalone",
+  "background_color": "#030307",
+  "theme_color": "#FF6B35",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["fitness", "games", "productivity", "lifestyle"],
+  "screenshots": [],
+  "lang": "fr"
+}
